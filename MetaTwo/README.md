@@ -309,7 +309,7 @@ We have limited functionality as user `manager`. If we were wordpress admin, we 
 
 After enumeration, we didn't find anything interesting. So again looking at Wordpress Vulnerability Database, if we have any vulnerability related to media upload in Wordpress 5.6.2
 
-We found [CVE-2021-24997](https://www.wordfence.com/threat-intel/vulnerabilities/wordpress-core/wordpress-core-571-xxe-injection?asset_slug=wordpress). We found technical details and POC [wpscam.com](https://wpscan.com/vulnerability/cbbe6c17-b24e-4be4-8937-c78472a138b5/). But the POC is not working. You can the read this blog [blog.wpsec.com](https://blog.wpsec.com/wordpress-xxe-in-media-library-cve-2021-29447/) to understand why the POC given at wpscan website is not working. Using the POC from wpsec blog, we exploited the vulnerability.
+We found [CVE-2021-24997](https://www.wordfence.com/threat-intel/vulnerabilities/wordpress-core/wordpress-core-571-xxe-injection?asset_slug=wordpress). We found technical details and POC [wpscan.com](https://wpscan.com/vulnerability/cbbe6c17-b24e-4be4-8937-c78472a138b5/). But the POC is not working. You can the read this blog [blog.wpsec.com](https://blog.wpsec.com/wordpress-xxe-in-media-library-cve-2021-29447/) to understand why the POC given at wpscan website is not working. Using the POC from wpsec blog, we exploited the vulnerability.
 
 Create `payload.wav` and `xxe.dtd` with following content.
 
@@ -528,27 +528,26 @@ Sorry, user jnelson may not run sudo on meta2.
 Finding setuid and setgid binaries
 
 ```
-jnelson@meta2:~$ find / -type f -perm -4000 2>/dev/null
-/usr/bin/mount
-/usr/bin/chfn
-/usr/bin/newgrp
-/usr/bin/chsh
-/usr/bin/sudo
-/usr/bin/umount
-/usr/bin/fusermount
-/usr/bin/gpasswd
-/usr/bin/su
-/usr/bin/passwd
-/usr/lib/openssh/ssh-keysign
-/usr/lib/dbus-1.0/dbus-daemon-launch-helper
-
-jnelson@meta2:~$ find / -type f -perm -2000 2>/dev/null
-/usr/sbin/unix_chkpwd
-/usr/bin/wall
-/usr/bin/expiry
-/usr/bin/crontab
-/usr/bin/ssh-agent
-/usr/bin/chage
+jnelson@meta2:~$ find / -type f -perm -4000 -ls 2>/dev/null
+     4122     56 -rwsr-xr-x   1 root     root        55528 Jan 20  2022 /usr/bin/mount
+      106     60 -rwsr-xr-x   1 root     root        58416 Feb  7  2020 /usr/bin/chfn
+     3596     44 -rwsr-xr-x   1 root     root        44632 Feb  7  2020 /usr/bin/newgrp
+      107     52 -rwsr-xr-x   1 root     root        52880 Feb  7  2020 /usr/bin/chsh
+    13325    180 -rwsr-xr-x   1 root     root       182600 Feb 27  2021 /usr/bin/sudo
+     4124     36 -rwsr-xr-x   1 root     root        35040 Jan 20  2022 /usr/bin/umount
+    11678     36 -rwsr-xr-x   1 root     root        34896 Feb 26  2021 /usr/bin/fusermount
+      109     88 -rwsr-xr-x   1 root     root        88304 Feb  7  2020 /usr/bin/gpasswd
+     3755     72 -rwsr-xr-x   1 root     root        71912 Jan 20  2022 /usr/bin/su
+      110     64 -rwsr-xr-x   1 root     root        63960 Feb  7  2020 /usr/bin/passwd
+     7150    472 -rwsr-xr-x   1 root     root       481608 Jul  1  2022 /usr/lib/openssh/ssh-keysign
+      742     52 -rwsr-xr--   1 root     messagebus    51336 Oct  5  2022 /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+jnelson@meta2:~$ find / -type f -perm -2000 -ls 2>/dev/null
+       90     40 -rwxr-sr-x   1 root     shadow      38912 Aug 26  2021 /usr/sbin/unix_chkpwd
+     1516     36 -rwxr-sr-x   1 root     tty         35048 Jan 20  2022 /usr/bin/wall
+      108     32 -rwxr-sr-x   1 root     shadow      31160 Feb  7  2020 /usr/bin/expiry
+     5480     44 -rwxr-sr-x   1 root     crontab     43568 Feb 22  2021 /usr/bin/crontab
+     7138    348 -rwxr-sr-x   1 root     ssh        354440 Jul  1  2022 /usr/bin/ssh-agent
+      105     80 -rwxr-sr-x   1 root     shadow      80256 Feb  7  2020 /usr/bin/chage
 ```
 
 No path for privilege escalation in setuid and setgid binaries. Lets check processes
